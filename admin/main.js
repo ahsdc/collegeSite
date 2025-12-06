@@ -1,6 +1,6 @@
 // Appwrite
-let awURL = `https://[REGION].cloud.appwrite.io/v1`;
-let awID = '';
+let awURL = `https://sgp.cloud.appwrite.io/v1`;
+let awID = '69340b3f001e4821b46b';
 const aw = new Appwrite.Client();
 aw.setEndpoint(awURL);
 aw.setProject(awID);
