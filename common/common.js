@@ -104,251 +104,214 @@ navData = [
 createNav(navData)
 
 \* -------------------------------------------------- */
-function createNav(navData, forceMobile=false){
-    if (forceMobile || window.innerWidth < mobileUiThreshold){        
-        drwrTop = ce("div");
-        drwrTop.id = "drwrTop";
-        drwrTop.append(
-            "Pages",
-            Object.assign(matSym("close"), {
-                classList: "rNavBtn material-symbols-outlined",
-                onclick: function(){drwr.style.display = "none";drwrBack.style.display = "none";navCont.style.height = "auto"},
-            })
-        );
-        
-        drwrBody = ce("div");
-        drwrBody.id = "drwrBody";
+function createHdr(pageData, navData, loadCover=true, forceMobile=false){
+    if (forceMobile || window.innerWidth < mobileUiThreshold){
+        let hdrCont = document.getElementById("hdrCont");
+        hdrCont.innerHTML = "";
+        hdrCont.append(
+            ce("div", {id: "hdr"}, [
+                ce("div", {id: "drwrCont"}, [
+                    ce("div", {id: "drwrBlnk", onclick: function(){document.getElementById("drwrCont").style.display="none";}}),
+                    ce("div", {id: "drwr"}, [
+                        ce("div", {id: "drwrTop"}, ["Pages", matSym("close", {
+                            className: "material-symbols-outlined",
+                            onclick: function(){document.getElementById("drwrCont").style.display="none";}
+                        })]),
+                        ce("div", {id: "drwrBody"}, function(navData){
+                            let returnVal = [];
+                            for (index1 in navData){
+                                if (!navData[index1].logo){
+                                    let drwrOpts = ce("span");
+                                    drwrOpts.className = "drwrOpts rBtn";
+                                    drwrOpts.append(navData[index1].text);
+                                    if (typeof(navData[index1].link)=='string'){
+                                        drwrOpts.rLink = navData[index1].link;
+                                        drwrOpts.onclick = function(){location.href = this.rLink;}
+                                    }
+                                    returnVal.push(drwrOpts);
 
-        let drwr = ce("div");
-        drwr.id = "drwr";
-        drwr.className = "frostFX";
-        drwr.append(drwrTop, drwrBody);
-        
-        let navPiImgSrc;
-
-        for (index1 in navData){
-            if (navData[index1].logo){
-                navPiImgSrc = navData[index1].src
-            }
-            else{
-                let drwrOpts = ce("span");
-                drwrOpts.className = "drwrOpts rNavBtn";
-                drwrOpts.append(navData[index1].text);
-                if (typeof(navData[index1].link)=='string'){
-                    drwrOpts.rLink = navData[index1].link;
-                    drwrOpts.onclick = function(){location.href = this.rLink;}
-                }
-                drwrBody.append(drwrOpts);
-
-                if (typeof(navData[index1]["subOpts"]) == "object"){
-                    for (index2 in navData[index1]["subOpts"]){
-                        let drwrSubOpts = ce("span");
-                        drwrSubOpts.className = "drwrSubOpts rNavBtn";
-                        drwrSubOpts.append(matSym("open_in_new"), navData[index1]["subOpts"][index2].text);
-                        if (typeof(navData[index1]["subOpts"][index2].link)=='string'){
-                            drwrSubOpts.rLink = navData[index1]["subOpts"][index2].link;
-                            drwrSubOpts.onclick = function(){location.href = this.rLink;}
-                        }
-                        
-                        drwrBody.append(drwrSubOpts);
-                    }
-                }
-
-            }
-        }
-
-
-        let navPiImg = ce("img");
-        navPiImg.src = navPiImgSrc || "/logo.png";
-        let navPi = ce("div");
-        navPi.id = "navPi";
-        navPi.onclick = function(){location.href = "/";};
-        navPi.append(navPiImg);
-        let navPiCont = ce("div");
-        navPiCont.id = "navPiCont";
-        navPiCont.append(navPi);
-
-        let menuSym = matSym("menu");
-        menuSym.classList = "rNavBtn material-symbols-outlined";
-        menuSym.onclick = function(){drwr.style.display = "flex";drwrBack.style.display = "block";navCont.style.height = "100%"}
-        let returnToTopSym = matSym("arrow_upward");
-        returnToTopSym.classList = "rNavBtn material-symbols-outlined";
-        returnToTopSym.onclick = function(){location.href = "#";}
-
-        let nav = ce("div");
-        nav.id = "nav";
-        nav.className = "frostFX";
-        nav.append(menuSym, navPiCont, returnToTopSym);
-
-        let css = ce("style"); //ToDo: MobileUI Nav CSS to DOM.
-        css.append(`
-            .rNavBtn{padding: 8px 0px;margin: 2px 12px;border-radius: 10px;transition: ease-in 100ms;}
-            .rNavBtn:hover{color: var(--color10);background: #00000040;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
-            #drwr{position: absolute;top: 0;bottom: 0;left: 0;right: 80px;display: none;flex-direction: column;text-shadow: var(--color60) 0px 0px 10px;}
-            #drwrTop{color: var(--color30);display: flex;align-items: center;justify-content: space-between;padding: 5px 10px;font-weight: 600;font-size: 25px;}
-            #drwrTop .material-symbols-outlined{font-size: 40px;}
-            #drwrBody{display: flex;flex-direction: column;overflow-y: scroll;overflow-x: none;}
-            #drwrBody .material-symbols-outlined{font-size: 14px;max-width: 14px;margin-right: 5px;position: relative;top: 2px;}
-            #drwrBack{display: none;position: absolute;top: 0;bottom: 0;right: 0px;width: 80px;backdrop-filter: brightness(0.20);}
-            .drwrOpts{font-weight: 600;font-size: 16px;color: var(--color30);}
-            .drwrSubOpts{font-weight: 400;font-size: 14px;color: var(--color30Shade);margin-left: 25px;}
-            #navCont{z-index:3;position: fixed;top: 0px;width: 100%;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
-            #nav{color: var(--color30);display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 15px 15px;}
-            #nav .material-symbols-outlined{font-size: 30px;}
-            #navPiCont{position: relative;top: 15px;width: 100%;display: flex;justify-content: center;}
-            #navPi{height:80px;width:80px;border-radius: 50%;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
-            #navPi img{width:inherit;height:inherit;border-radius:50%;object-fit:contain;}
-            #subNavCont{margin-top:50px}
-        `);
-
-        let drwrBack = ce("drwrBack");
-        drwrBack.id = "drwrBack";
-        drwrBack.onclick = function(){drwr.style.display = "none";drwrBack.style.display = "none";navCont.style.height = "auto"}
-        
-        let navCont = document.getElementById("navCont");
-        navCont.innerHTML = "";
-        navCont.append(nav, drwrBack, drwr, css);
-    }else{
-
-        let navLn1 = ce("div", {id: "navLn1"});
-    
-        let navLn2 = ce("div");
-        navLn2.id = "navLn2";
-    
-        for(index1 in navData){
-            if (navData[index1].logo){
-                let navPiImg = ce("img");
-                navPiImg.src = navData[index1].src || "/logo.png";
-    
-                let navPi = ce("div");
-                navPi.id = "navPi";
-                navPi.onclick = function(){location.href = "/";};
-                navPi.append(navPiImg);
-                
-                let navPiCont = ce("div");
-                navPiCont.id = "navPiCont";
-                navPiCont.append(navPi);
-                
-                navLn1.append(navPiCont);
-            }else{
-                let navLn1Opts = ce("span");
-                navLn1Opts.className = "navLn1Opts rNavBtn";
-                navLn1Opts.innerText = navData[index1].text;
-                if (typeof(navData[index1].link)=='string'){
-                    navLn1Opts.rLink = navData[index1].link;
-                    navLn1Opts.onclick = function(){location.href = this.rLink;}
-                }
-        
-                if (typeof(navData[index1]["subOpts"]) == "object"){
-                    navLn1Opts.append(matSym("expand_more"));
-                    navLn1Opts.subOpts=navData[index1]["subOpts"];
-    
-                    navLn1Opts.onmouseenter = function(){
-                        navLn2.innerHTML = "";
-                        navLn2.style.marginBottom = "15px";
-                        navLn2.style.marginTop = "35px";
-                        navLn2.style.display = "flex";
-    
-                        for (index2 in this.subOpts){
-                            let navLn2Opts = ce("span");
-                            navLn2Opts.className = "navLn2Opts rNavBtn";
-                            navLn2Opts.append(matSym("open_in_new"), this.subOpts[index2].text);
-                            if (typeof(this.subOpts[index2].link)=='string'){
-                                navLn2Opts.rLink = this.subOpts[index2].link;
-                                navLn2Opts.onclick = function(){location.href = this.rLink;}
+                                    if (typeof(navData[index1]["subOpts"]) == "object"){
+                                        for (index2 in navData[index1]["subOpts"]){
+                                            let drwrSubOpts = ce("span");
+                                            drwrSubOpts.className = "drwrSubOpts rBtn";
+                                            drwrSubOpts.append(matSym("open_in_new"), navData[index1]["subOpts"][index2].text);
+                                            if (typeof(navData[index1]["subOpts"][index2].link)=='string'){
+                                                drwrSubOpts.rLink = navData[index1]["subOpts"][index2].link;
+                                                drwrSubOpts.onclick = function(){location.href = this.rLink;}
+                                            }
+                                            returnVal.push(drwrSubOpts);
+                                        }
+                                    }
+                                }
                             }
-                            
-                            navLn2.append(navLn2Opts);
+                            return returnVal;
+                        }(navData)),
+                    ])
+                ]),
+                ce("div",{id: "drwrBtn", className: "rBtn", onclick: function(){document.getElementById("drwrCont").style.display="block";}}, [matSym("menu")]),
+                ce("div", {id: "pageIdent"}, [
+                    ce("a", {href: "/"}, [ce("img", {id: "pageLogo", src: pageData.logo || "/logo.png"})]),
+                    ce("div", {}, [
+                        ce("div", {id: "pageText", innerText: pageData.text || siteName}),
+                        ce("div", {id: "pageSubText", innerText: pageData.subText || siteName})
+                    ])
+                ]), ce("div", {id: "nav"}, function(navData){
+                    let returnVal = [];
+                    for (index1 in navData){
+                        returnVal.push(ce("div", {"className": "navLn1Opts rBtn", innerText: navData[index1].text}));
+                        if(typeof(navData[index1].link)=='string'){
+                            returnVal[index1].rLink = navData[index1].link;
+                            returnVal[index1].onclick = function(){location.href = this.rLink;}
+                        }
+                        if (typeof(navData[index1].subOpts) == "object"){
+                            returnVal[index1].append(matSym("expand_more"));
+                            returnVal[index1].onclick = function(){
+                                document.getElementById("drwrCont").style.display="block";
+                            }
+                        }
+                        if(navData[index1].logo){
+                            delete returnVal[index1];
                         }
                     }
-                }else{
-                    navLn1Opts.onmouseenter = function(){
-                        navLn2.innerHTML = "";
-                        navLn2.style.marginBottom = "0px";
-                        navLn2.style.marginTop = "0px";
-                        navLn2.style.display = "none";
-                    }
-                }
-                
-                navLn1.append(navLn1Opts);
-            }
-        }
-    
-        let nav = ce("div");
-        nav.id = "nav";
-        nav.className = "frostFX";
-        nav.append(navLn1, navLn2);
-        nav.onmouseleave = function(){
-            navLn2.innerHTML = "";
-            navLn2.style.marginBottom = "0px";
-            navLn2.style.marginTop = "0px";
-            navLn2.style.display = "none";
-        }
-
-        let css = ce("style");
-        css.append(`
-            #navCont{z-index:3;position: fixed;top: 20px;width: 100%;display: flex;justify-content: center;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
-            #nav{white-space: nowrap;padding: 0px 15px;border-radius: 25px;}
-            #navLn1{display: flex;justify-content: center;align-items: center;height: 90px;}
-            #navLn1 .material-symbols-outlined{font-size: 24px;max-width: 24px;position: relative;top: 1px;}
-            .navLn1Opts{color: var(--color30);font-weight: 400;display: flex;justify-content: center;font-size: 20px;}
-            #navPiCont{position: relative;top: 20px;}
-            #navPi{height: 112px;width: 112px;border-radius: 50%;cursor: pointer;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
-            #navPi img{width:inherit;height:inherit;border-radius:50%;object-fit:contain;}
-            #navLn2{display: flex;flex-direction: column;}
-            #navLn2 .material-symbols-outlined{font-size: 17px;max-width: 17px;margin-right: 5px;position: relative;top: 2px;}
-            .navLn2Opts{font-size: 18px;font-weight: 400;color: var(--color30Shade);}            
-            .rNavBtn{padding: 8px 0px;margin: 2px 12px;border-radius: 10px;transition: ease-in 100ms;cursor: pointer;}
-            .rNavBtn:hover{color: var(--color10);background: #00000040;font-weight: 600;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
-        `);
-    
-        let navCont = document.getElementById("navCont");
-        navCont.innerHTML = "";
-        navCont.append(nav, css);
-        
-        css.append(`
-            @media only screen and (max-width: ${nav.offsetWidth || 1000}px){
-                #nav{padding: 0px 10px;border-radius: 20px;}
-                #navLn1{height: 60px;}
-                #navLn1 .material-symbols-outlined{font-size: 18px;max-width: 18px;}
-                .navLn1Opts{font-size: 14px;}
-                #navPi{height: 80px;width: 80px;}
-                #navLn2 .material-symbols-outlined{font-size: 14px;max-width: 14px;}
-                .navLn2Opts{font-size: 14px;}
-                .rNavBtn{padding: 4px 0px;margin: 1px 6px;border-radius: 5px;}
-                .rNavBtn:hover{padding: 4px 5px;margin: 1px 1px;}
-            }
-        `)
-
-    }
-
-}
-
-
-
-/* -------------------------------------------------- *\
-|---           HELP RELATING THE SubNav.            ---|
-
-subNavData = {
-    text: "",
-    subText: "",
-    image: "URL"
-}
-createSubNav(subNavData)
-
-\* -------------------------------------------------- */
-function createSubNav(subNavData){
-    try{
-        let subNavCont = document.getElementById("subNavCont");
-        subNavCont.innerHTML = "";
-        subNavCont.append(
-            ce("div", {id: "subNavImg", style: `background: url("${subNavData.image}");background-color: var(--color60);background-repeat: no-repeat;background-position: center;background-size: contain;`}, [
-                ce("div", {id: "subNavImgBlurOverlay", style: `background: url("${subNavData.image}");background-repeat: no-repeat;background-position: center;background-size: contain;backdrop-filter: blur(200px);`})
-            ]),
-            ce("div", {id: "subNavTxt", innerText: subNavData.text || siteName}),
-            ce("div", {id: "subNavSubTxt", innerText: subNavData.subText || siteName})
+                    return returnVal;
+                }(navData)),
+                ce("div", {id: loadCover?"hdrImg":"hdrImg_"}, [ce("div", {id: loadCover?"hdrImgBlurOverlay":"hdrImgBlurOverlay_"})])
+            ])
         );
-    }catch(e){}
+        hdrCont.append(ce("style", {}, [`
+                /* hdr */
+                #hdr{display:flex;flex-direction:column;align-items:center;}
+
+                /* PageIdent */
+                #pageIdent{display:flex;flex-direction:column;align-items:center;margin: 0px 15px}
+                #pageLogo{height:100px;width:100px;margin:20px 0px 0px 0px;border-radius:50%;border:solid 2px;border-color:var(--color30Shade);cursor:pointer;background:linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px}
+                #pageText{margin-top:10px;font-size:25px;font-weight:600;text-align:center;color:var(--color10);}
+                #pageSubText{margin-top:10px;margin-bottom:15px;font-size:18px;text-align:center;color:var(--color10Tint);}
+
+                /* Drwr */
+                #drwrBtn{height:40px;width:40px;position:absolute;top:20px;left:15px;display:flex;justify-content:center;align-items:center;background:#00000080;border-color:#ffffff25;}
+                #drwrCont{display:none;position:fixed;z-index:3;height:100%;width:100%;background:#00000020;color:var(--color30);}
+                #drwrBlnk{position:absolute;width:80px;height:100%;right:0px}
+                #drwr{position:relative;right:80px;padding-left:80px;height:100%;background:#00000080;backdrop-filter:blur(10px);border-right:solid #ffffff25 2px;}
+                #drwrTop{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;font-size:25px;font-weight:600;}
+                #drwrTop .material-symbols-outlined{padding:8px 0px;font-size:40px;}
+                #drwrBody{display:flex;flex-direction:column;overflow-y:auto;overflow-x:none;padding:0px 10px;}
+                #drwrBody .material-symbols-outlined{font-size:14px;max-width:14px;margin-right:5px;position:relative;top:2px}
+                .drwrOpts{font-weight:600;font-size:16px;color:var(--color30);margin-top:10px;}
+                .drwrSubOpts{font-weight:400;font-size:14px;color:var(--color30Shade);margin-left:25px;margin-top:10px;}
+
+                /* nav */
+                #nav{display:flex;flex-direction:row;justify-content:safe center;width:100%;padding:8px 0px;background: var(--color60);overflow-x:auto;}
+                #nav .material-symbols-outlined{font-size: 18px;max-width: 18px;}
+                .navLn1Opts{display:flex;justify-content:center;align-items:center;margin:0px 0px 0px 8px;color:var(--color30);font-weight:400;font-size:14px;}
+
+                /* NavImage */
+                #hdrImg{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:200px;min-height:200px;}
+                #hdrImgBlurOverlay{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:200px;min-height:200px;}
+        `]));
+
+    }else{
+        let hdrCont = document.getElementById("hdrCont");
+        hdrCont.innerHTML = "";
+        hdrCont.append(
+            ce("div", {id: "hdr"}, [
+                ce("div", {id: "pageIdent"}, [
+                    ce("a", {href: "/"}, [ce("img", {id: "pageLogo", src: pageData.logo || "/logo.png"})]),
+                    ce("div", {}, [
+                        ce("div", {id: "pageText", innerText: pageData.text || siteName}),
+                        ce("div", {id: "pageSubText", innerText: pageData.subText || siteName})
+                    ])
+                ]),
+                ce("div", {id: "nav", onmouseleave: function(){let navLn2=document.getElementById("navLn2");navLn2.innerHTML="";navLn2.style.marginBottom="0px";navLn2.style.marginTop="0px";navLn2.style.display="none";}}, [
+                    ce("div", {id: "navLn1"}, function(navData){
+
+                        let returnVal = [];
+                        for (index1 in navData){
+                            returnVal.push(ce("div", {"className": "navLn1Opts rBtn", innerText: navData[index1].text}));
+                            if (typeof(navData[index1].link)=='string'){
+                                returnVal[index1].rLink = navData[index1].link;
+                                returnVal[index1].onclick = function(){location.href = this.rLink;}
+                            }
+                            if (typeof(navData[index1].subOpts) == "object"){
+                                returnVal[index1].append(matSym("expand_more"));
+                                returnVal[index1].subOpts=navData[index1]["subOpts"];
+                                returnVal[index1].onmouseenter = function(){
+                                    let navLn2=document.getElementById("navLn2");
+                                    navLn2.innerHTML = "";navLn2.style.marginBottom = "15px";navLn2.style.marginTop = "10px";navLn2.style.display = "flex";
+                                    for (index2 in this.subOpts){
+                                        let navLn2Opts = ce("span", {className: "navLn2Opts rBtn"}, [matSym("open_in_new"), this.subOpts[index2].text]);
+                                        if (typeof(this.subOpts[index2].link)=='string'){
+                                            navLn2Opts.rLink = this.subOpts[index2].link;
+                                            navLn2Opts.onclick = function(){location.href = this.rLink;}
+                                        }
+                                        navLn2.append(navLn2Opts);
+                                    }
+                                }
+                            }else{
+                                returnVal[index1].onmouseenter = function(){
+                                    navLn2.innerHTML = "";navLn2.style.marginBottom = "0px";navLn2.style.marginTop = "0px";navLn2.style.display = "none";
+                                }
+                            }
+                            if(navData[index1].logo){
+                                delete returnVal[index1];
+                            }
+                        }
+                        return returnVal;
+
+                    }(navData)),
+                    ce("div", {id: "navLn2"})
+                ]),
+                ce("div", {id: loadCover?"hdrImg":"hdrImg_"}, [ce("div", {id: loadCover?"hdrImgBlurOverlay":"hdrImgBlurOverlay_"})])
+            ])
+        );
+        hdrCont.append(
+            ce("style", {}, [`
+                /* hdr */
+                #hdr{display:flex;flex-direction:column;align-items:center;}
+
+                /* PageIdent */
+                #pageIdent{display:flex;flex-direction:row;align-items:center;margin: 0px 15px}
+                #pageLogo{height: 112px;width: 112px;border-radius: 50%;border:solid 2px;border-color:var(--color30Shade);cursor: pointer;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;margin: 10px 10px 10px 0px}
+                #pageText{margin-top: 30px;font-size: 35px;font-weight: 600;text-align: center;color: var(--color10);}
+                #pageSubText{margin-top: 10px;margin-bottom: 30px;font-size: 25px;text-align: center;color: var(--color10Tint);}
+                
+                /* nav */
+                #nav{display:flex;flex-direction:column;padding:30px 0px;width:100%;background: var(--color60);}
+                #navLn1{display:flex;flex-direction:row;justify-content:safe center;width:100%;overflow-x:auto;}
+                #navLn2{display:flex;flex-direction:column;overflow-x:auto;margin: 0px 100px}
+                .navLn1Opts{color:var(--color30);font-weight:400;font-size:20px;display:flex;justify-content:center;align-items:center;margin:0px 0px 0px 8px;}
+                .navLn2Opts{display:flex;justify-content:center;align-items:center;margin:10px 0px 0px 0px;}
+                #navLn2 .material-symbols-outlined{font-size: 17px;max-width: 17px;margin-right: 5px;position: relative;top: 2px;}
+
+                /* NavImage */
+                #hdrImg{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:250px;min-height:250px;}
+                #hdrImgBlurOverlay{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:250px;min-height:250px;}
+            `])
+        );
+        hdrCont.append(
+            ce("style", {}, [`
+                /* Conditioned */
+                @media only screen and (max-width: ${document.getElementById("navLn1").offsetWidth || 1000}px){
+                    #pageIdent{flex-direction:column;}
+                    #pageLogo{height:100px;width:100px;margin:20px 0px 0px 0px;}
+                    #pageText{font-size:25px;margin-top:10px;}
+                    #pageSubText{font-size:18px;margin-bottom:15px}
+                
+                    #nav{padding: 15px 0px;}
+                    #navLn1 .material-symbols-outlined{font-size: 18px;max-width: 18px;}
+                    .navLn1Opts{font-size: 14px;}
+                    #navLn2{margin: 0px 50px}
+                    #navLn2 .material-symbols-outlined{font-size: 14px;max-width: 14px;}
+                    .navLn2Opts{font-size: 13px;}
+                    .rNavBtn{padding: 4px 0px;margin: 1px 6px;border-radius: 5px;}
+                    .rNavBtn:hover{padding: 4px 5px;margin: 1px 1px;}
+
+                    #hdrImg{max-height:200px;min-height:200px}
+                    #hdrImgBlurOverlay{max-height:200px;min-height:200px}
+                }    
+            `])
+        );
+    }
 }
 
 
@@ -597,7 +560,7 @@ function loadCommonData(callback){
         callback();
     });
 }
-function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad: undefined, extraCSS: undefined}){
+function initPage(arg={pageName: undefined, noSubNavImage: false, subNavImage: undefined, onCommonLoad: undefined, extraCSS: undefined}){
     loadCommonData(()=>{
         // Set Colors
         try{commonDBData.colors.color10}catch(e){commonDBData = Object(commonDBData);commonDBData["colors"]={};}
@@ -619,15 +582,20 @@ function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad
         `, arg.extraCSS);
         document.head.append(commonCSSExtra);
     
-        // Load Nav
-        createNav(commonDBData.navData || navData);
+        // Set Page Title
+        document.getElementsByTagName("head")[0].append(ce("title", {}, [`${arg.pageName || ""} - ${commonDBData.siteName || siteName}`]));
+  
+        // Load Header
+        createHdr({
+                text: commonDBData.siteName || siteName,
+                subText: arg.pageName || "",
+                logo: "https://firebasestorage.googleapis.com/v0/b/pttbmcwebsite.appspot.com/o/photos%2FWhatsApp%20Image%202025-09-11%20at%209.38.46%20PM.jpeg?alt=media",
+                image: arg.subNavImage || Object(Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0]).url
+            }, commonDBData.navData || navData, !arg.noSubNavImage
+        );
     
         // Load Footer
         createFtr(commonDBData.ftrData || ftrData);
-        
-        // Load SubNav And Set Page Title
-        createSubNav({image: arg.subNavImage || Object(Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0]).url, text: commonDBData.siteName || siteName, subText: arg.pageName || ""});
-        document.getElementsByTagName("head")[0].append(ce("title", {}, [`${arg.pageName || ""} - ${commonDBData.siteName || siteName}`]));
 
         // OnLoad Callback
         if (typeof(arg.onCommonLoad) == 'function'){arg.onCommonLoad();}

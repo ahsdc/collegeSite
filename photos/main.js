@@ -1,5 +1,6 @@
 initPage({
     pageName: "Photos",
+    noSubNavImage: true,
     extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
 

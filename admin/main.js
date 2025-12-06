@@ -10,6 +10,7 @@ awStg = new Appwrite.Storage(aw); // mainBucket
 // Common
 initPage({
     pageName: "Admin Page",
+    noSubNavImage: true,
     extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
 

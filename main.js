@@ -1,8 +1,9 @@
 initPage({
     pageName: "Home",
+    noSubNavImage: true,
     extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
-        #sldshw{height: 250px;margin-top: 50px;}
+        #sldshw{height: 250px;}
         #siteNameCont{font-size: 25px;}
 
         .rSectTitle{font-size:20px}
