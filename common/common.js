@@ -105,6 +105,9 @@ createNav(navData)
 
 \* -------------------------------------------------- */
 function createHdr(pageData, navData, loadCover=true, forceMobile=false){
+    let logoURL="/logo.png";
+    for (i in navData){if(navData[i].logo){logoURL=navData[i].src;console.log(logoURL)}}
+    
     if (forceMobile || window.innerWidth < mobileUiThreshold){
         let hdrCont = document.getElementById("hdrCont");
         hdrCont.innerHTML = "";
@@ -150,10 +153,7 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                 ]),
                 ce("div",{id: "drwrBtn", className: "rBtn", onclick: function(){document.getElementById("drwrCont").style.display="block";}}, [matSym("menu")]),
                 ce("div", {id: "pageIdent"}, [
-                    ce("a", {href: "/"}, [ce("img", {
-                        id: "pageLogo",
-                        src: function(){let logoURL="/logo.png";for (i in navData){if(navData[i].logo){logoURL=navData[index1].src}}return logoURL;}
-                    })]),
+                    ce("a", {href: "/"}, [ce("img", {id: "pageLogo", src: logoURL})]),
                     ce("div", {}, [
                         ce("div", {id: "pageText", innerText: pageData.text || siteName}),
                         ce("div", {id: "pageSubText", innerText: pageData.subText || siteName})
@@ -219,7 +219,7 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
         hdrCont.append(
             ce("div", {id: "hdr"}, [
                 ce("div", {id: "pageIdent"}, [
-                    ce("a", {href: "/"}, [ce("img", {id: "pageLogo", src: pageData.logo || "/logo.png"})]),
+                    ce("a", {href: "/"}, [ce("img", {id: "pageLogo", src: logoURL})]),
                     ce("div", {}, [
                         ce("div", {id: "pageText", innerText: pageData.text || siteName}),
                         ce("div", {id: "pageSubText", innerText: pageData.subText || siteName})
