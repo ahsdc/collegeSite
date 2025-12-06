@@ -150,7 +150,10 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                 ]),
                 ce("div",{id: "drwrBtn", className: "rBtn", onclick: function(){document.getElementById("drwrCont").style.display="block";}}, [matSym("menu")]),
                 ce("div", {id: "pageIdent"}, [
-                    ce("a", {href: "/"}, [ce("img", {id: "pageLogo", src: pageData.logo || "/logo.png"})]),
+                    ce("a", {href: "/"}, [ce("img", {
+                        id: "pageLogo",
+                        src: function(){let logoURL="/logo.png";for (i in navData){if(navData[i].logo){logoURL=navData[index1].src}}return logoURL;}
+                    })]),
                     ce("div", {}, [
                         ce("div", {id: "pageText", innerText: pageData.text || siteName}),
                         ce("div", {id: "pageSubText", innerText: pageData.subText || siteName})
@@ -586,12 +589,14 @@ function initPage(arg={pageName: undefined, noSubNavImage: false, subNavImage: u
         document.getElementsByTagName("head")[0].append(ce("title", {}, [`${arg.pageName || ""} - ${commonDBData.siteName || siteName}`]));
   
         // Load Header
-        createHdr({
+        createHdr(
+            {
                 text: commonDBData.siteName || siteName,
                 subText: arg.pageName || "",
-                logo: "https://firebasestorage.googleapis.com/v0/b/pttbmcwebsite.appspot.com/o/photos%2FWhatsApp%20Image%202025-09-11%20at%209.38.46%20PM.jpeg?alt=media",
                 image: arg.subNavImage || Object(Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0]).url
-            }, commonDBData.navData || navData, !arg.noSubNavImage
+            },
+            commonDBData.navData || navData,
+            !arg.noSubNavImage
         );
     
         // Load Footer
