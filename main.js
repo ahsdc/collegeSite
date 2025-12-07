@@ -4,12 +4,10 @@ initPage({
     extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
         #sldshw{height: 250px;}
-        #siteNameCont{font-size: 25px;}
 
         .rSectTitle{font-size:20px}
     }`,
     onCommonLoad: ()=>{
-        document.getElementById("siteNameCont").innerText = commonDBData.siteName || siteName;
         initSldshw(commonDBData.pinnedPhotos);sldshwSetIndex(0);setInterval(sldshwNext, 5000);
         initLatestNotice(commonDBData.noticeSnippet);
         initPinnedPpl(commonDBData.pinnedPeople);
