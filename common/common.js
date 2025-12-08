@@ -106,7 +106,7 @@ createNav(navData)
 \* -------------------------------------------------- */
 function createHdr(pageData, navData, loadCover=true, forceMobile=false){
     let logoURL="/logo.png";
-    for (i in navData){if(navData[i].logo){logoURL=navData[i].src;console.log(logoURL)}}
+    for (i in navData){if(navData[i].logo){logoURL=navData[i].src;}}
     
     if (forceMobile || window.innerWidth < mobileUiThreshold){
         let hdrCont = document.getElementById("hdrCont");
@@ -130,6 +130,21 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                                     if (typeof(navData[index1].link)=='string'){
                                         drwrOpts.rLink = navData[index1].link;
                                         drwrOpts.onclick = function(){location.href = this.rLink;}
+
+                                        if(navData[index1].link!="#"){
+                                            let parsedURL = new URL(ce("a", {href: navData[index1].link}).href);
+                                            if (window.location.pathname=="/allArticle/"){
+                                                if (new URLSearchParams(window.location.search).get("boardID")==new URLSearchParams(parsedURL.search).get("boardID")){
+                                                    drwrOpts.className=drwrOpts.className+" rBtnActv";
+                                                }
+                                            }else if(window.location.pathname=="/article/"){
+                                                if (new URLSearchParams(window.location.search).get("artclID")==new URLSearchParams(parsedURL.search).get("artclID")){
+                                                    drwrOpts.className=drwrOpts.className+" rBtnActv";
+                                                }
+                                            }else if (window.location.pathname==parsedURL.pathname){
+                                                drwrOpts.className=drwrOpts.className+" rBtnActv";
+                                            }
+                                        }
                                     }
                                     returnVal.push(drwrOpts);
 
@@ -141,6 +156,21 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                                             if (typeof(navData[index1]["subOpts"][index2].link)=='string'){
                                                 drwrSubOpts.rLink = navData[index1]["subOpts"][index2].link;
                                                 drwrSubOpts.onclick = function(){location.href = this.rLink;}
+
+                                                if(navData[index1]["subOpts"][index2].link!="#"){
+                                                    let parsedURL = new URL(ce("a", {href: navData[index1]["subOpts"][index2].link}).href);
+                                                    if (window.location.pathname=="/allArticle/"){
+                                                        if (new URLSearchParams(window.location.search).get("boardID")==new URLSearchParams(parsedURL.search).get("boardID")){
+                                                            drwrSubOpts.className=drwrSubOpts.className+" rBtnActv";
+                                                        }
+                                                    }else if(window.location.pathname=="/article/"){
+                                                        if (new URLSearchParams(window.location.search).get("artclID")==new URLSearchParams(parsedURL.search).get("artclID")){
+                                                            drwrSubOpts.className=drwrSubOpts.className+" rBtnActv";
+                                                        }
+                                                    }else if (window.location.pathname==parsedURL.pathname){
+                                                        drwrSubOpts.className=drwrSubOpts.className+" rBtnActv";
+                                                    }
+                                                }
                                             }
                                             returnVal.push(drwrSubOpts);
                                         }
@@ -162,18 +192,31 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                     let returnVal = [];
                     for (index1 in navData){
                         returnVal.push(ce("div", {"className": "navLn1Opts rBtn", innerText: navData[index1].text}));
-                        if(typeof(navData[index1].link)=='string'){
-                            returnVal[index1].rLink = navData[index1].link;
-                            returnVal[index1].onclick = function(){location.href = this.rLink;}
-                        }
-                        if (typeof(navData[index1].subOpts) == "object"){
+                        if(navData[index1].logo){
+                            delete returnVal[index1];
+                        }else if (typeof(navData[index1].subOpts) == "object"){
                             returnVal[index1].append(matSym("expand_more"));
                             returnVal[index1].onclick = function(){
                                 document.getElementById("drwrCont").style.display="block";
                             }
+                        }else if(typeof(navData[index1].link)=='string'){
+                            returnVal[index1].rLink = navData[index1].link;
+                            returnVal[index1].onclick = function(){location.href = this.rLink;}
                         }
-                        if(navData[index1].logo){
-                            delete returnVal[index1];
+
+                        if(!navData[index1].logo && navData[index1].link!="#"){
+                            let parsedURL = new URL(ce("a", {href: navData[index1].link}).href);
+                            if (window.location.pathname=="/allArticle/"){
+                                if (new URLSearchParams(window.location.search).get("boardID")==new URLSearchParams(parsedURL.search).get("boardID")){
+                                    returnVal[index1].className=returnVal[index1].className+" rBtnActv";
+                                }
+                            }else if(window.location.pathname=="/article/"){
+                                if (new URLSearchParams(window.location.search).get("artclID")==new URLSearchParams(parsedURL.search).get("artclID")){
+                                    returnVal[index1].className=returnVal[index1].className+" rBtnActv";
+                                }
+                            }else if (window.location.pathname==parsedURL.pathname){
+                                returnVal[index1].className=returnVal[index1].className+" rBtnActv";
+                            }
                         }
                     }
                     return returnVal;
@@ -207,6 +250,7 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                 #nav{display:flex;flex-direction:row;justify-content:safe center;width:100%;padding:8px 0px;background: var(--color60);overflow-x:auto;}
                 #nav .material-symbols-outlined{font-size: 18px;max-width: 18px;}
                 .navLn1Opts{display:flex;justify-content:center;align-items:center;margin:0px 0px 0px 8px;color:var(--color30);font-weight:400;font-size:14px;}
+                .rBtnActv{font-weight: 600;background: #00000080;transition: ease-out 200ms;color: var(--color10)}
 
                 /* NavImage */
                 #hdrImg{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:200px;min-height:200px;}
