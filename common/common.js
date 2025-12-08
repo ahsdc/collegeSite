@@ -234,6 +234,21 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                             if (typeof(navData[index1].link)=='string'){
                                 returnVal[index1].rLink = navData[index1].link;
                                 returnVal[index1].onclick = function(){location.href = this.rLink;}
+                                
+                                if(navData[index1].link!="#"){
+                                    let parsedURL = new URL(ce("a", {href: navData[index1].link}).href);
+                                    if (window.location.pathname=="/allArticle/"){
+                                        if (new URLSearchParams(window.location.search).get("boardID")==new URLSearchParams(parsedURL.search).get("boardID")){
+                                            returnVal[index1].className=returnVal[index1].className+" rBtnActv";
+                                        }
+                                    }else if(window.location.pathname=="/article/"){
+                                        if (new URLSearchParams(window.location.search).get("artclID")==new URLSearchParams(parsedURL.search).get("artclID")){
+                                            returnVal[index1].className=returnVal[index1].className+" rBtnActv";
+                                        }
+                                    }else if (window.location.pathname==parsedURL.pathname){
+                                        returnVal[index1].className=returnVal[index1].className+" rBtnActv";
+                                    }
+                                }
                             }
                             if (typeof(navData[index1].subOpts) == "object"){
                                 returnVal[index1].append(matSym("expand_more"));
@@ -246,6 +261,21 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                                         if (typeof(this.subOpts[index2].link)=='string'){
                                             navLn2Opts.rLink = this.subOpts[index2].link;
                                             navLn2Opts.onclick = function(){location.href = this.rLink;}
+                            
+                                            if(this.subOpts[index2].link!="#"){
+                                                let parsedURL = new URL(ce("a", {href: this.subOpts[index2].link}).href);
+                                                if (window.location.pathname=="/allArticle/"){
+                                                    if (new URLSearchParams(window.location.search).get("boardID")==new URLSearchParams(parsedURL.search).get("boardID")){
+                                                        navLn2Opts.className=navLn2Opts.className+" rBtnActv";
+                                                    }
+                                                }else if(window.location.pathname=="/article/"){
+                                                    if (new URLSearchParams(window.location.search).get("artclID")==new URLSearchParams(parsedURL.search).get("artclID")){
+                                                        navLn2Opts.className=navLn2Opts.className+" rBtnActv";
+                                                    }
+                                                }else if (window.location.pathname==parsedURL.pathname){
+                                                    navLn2Opts.className=navLn2Opts.className+" rBtnActv";
+                                                }
+                                            }
                                         }
                                         navLn2.append(navLn2Opts);
                                     }
@@ -285,33 +315,11 @@ function createHdr(pageData, navData, loadCover=true, forceMobile=false){
                 .navLn1Opts{color:var(--color30);font-weight:400;font-size:20px;display:flex;justify-content:center;align-items:center;margin:0px 0px 0px 8px;}
                 .navLn2Opts{display:flex;justify-content:center;align-items:center;margin:10px 0px 0px 0px;}
                 #navLn2 .material-symbols-outlined{font-size: 17px;max-width: 17px;margin-right: 5px;position: relative;top: 2px;}
+                .rBtnActv{font-weight: 600;background: #00000080;transition: ease-out 200ms;color: var(--color10)}
 
                 /* NavImage */
                 #hdrImg{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:250px;min-height:250px;}
                 #hdrImgBlurOverlay{background:url("${pageData.image}");background-repeat:no-repeat;background-position:center;background-size:contain;backdrop-filter:blur(200px);max-width:100%;min-width:100%;max-height:250px;min-height:250px;}
-            `])
-        );
-        hdrCont.append(
-            ce("style", {}, [`
-                /* Conditioned */
-                @media only screen and (max-width: ${document.getElementById("navLn1").offsetWidth || 1000}px){
-                    #pageIdent{flex-direction:column;}
-                    #pageLogo{height:100px;width:100px;margin:20px 0px 0px 0px;}
-                    #pageText{font-size:25px;margin-top:10px;}
-                    #pageSubText{font-size:18px;margin-bottom:15px}
-                
-                    #nav{padding: 15px 0px;}
-                    #navLn1 .material-symbols-outlined{font-size: 18px;max-width: 18px;}
-                    .navLn1Opts{font-size: 14px;}
-                    #navLn2{margin: 0px 50px}
-                    #navLn2 .material-symbols-outlined{font-size: 14px;max-width: 14px;}
-                    .navLn2Opts{font-size: 13px;}
-                    .rNavBtn{padding: 4px 0px;margin: 1px 6px;border-radius: 5px;}
-                    .rNavBtn:hover{padding: 4px 5px;margin: 1px 1px;}
-
-                    #hdrImg{max-height:200px;min-height:200px}
-                    #hdrImgBlurOverlay{max-height:200px;min-height:200px}
-                }    
             `])
         );
     }
